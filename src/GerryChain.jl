@@ -1,6 +1,5 @@
 module GerryChain
 using JSON
-using HDF5
 using SparseArrays
 using LightGraphs
 using Random
@@ -12,80 +11,63 @@ import Shapefile
 import LibGEOS
 import LibSpatialIndex
 using Logging
+using ResumableFunctions
+#using Continuables
 
-export AbstractGraph,
-    BaseGraph,
-    Partition,
-    get_attributes,
-    get_populations_and_assignments,
-    get_district_nodes,
-    get_district_populations,
-    get_district_adj_and_cut_edges,
-    get_subgraph_population,
-    induced_subgraph_edges,
-    update_partition_adjacency,
+export
 
-    # balance edges
-    random_kruskal_mst,
+AbstractGraph, BaseGraph, Partition,
 
-    # proposals
-    RecomProposal,
-    FlipProposal,
-    DummyProposal,
+get_attributes, get_populations_and_assignments, get_district_nodes,
+get_district_populations, get_district_adj_and_cut_edges,
+kruskal_mst, random_kruskal_mst, division_kruskal_mst, wilson_ust,
+get_subgraph_population,
+induced_subgraph_edges, update_partition_adjacency,
 
-    # constraints
-    PopulationConstraint,
-    ContiguityConstraint,
-    satisfy_constraint,
+# proposals
+RecomProposal, FlipProposal, DummyProposal,
+get_valid_proposal_contraction, get_valid_proposal_memoization,
 
-    # recom
-    update_partition!,
-    recom_chain,
+# constraints
+PopulationConstraint,
+ContiguityConstraint,
+satisfy_constraint,
 
-    # flip
-    flip_chain,
+# recom
+update_partition!, recom_chain, reversible_recom_chain,
+reversible_recom_iterator, recom_iterator, raw_recom_iterator,
+get_reversible_recom_proposal, get_division_recom_proposal,
+get_recom_proposal,
 
-    # scores
-    DistrictAggregate,
-    DistrictScore,
-    PlanScore,
-    CompositeScore,
-    AbstractScore,
-    ChainScoreData,
-    score_initial_partition,
-    score_partition_from_proposal,
-    eval_score_on_district,
-    get_scores_at_step,
-    eval_score_on_partition,
-    save_scores_to_csv,
-    save_scores_to_json,
-    save_scores_to_hdf5,
-    get_score_values,
-    num_cut_edges,
-    coerce_aggregated_attributes!,
+district_pair_uniform, district_pair_cut_edges,
+district_pair_random_nodes, district_pair_chen_style,
 
-    # acceptance functions
-    always_accept,
-    satisfies_acceptance_fn,
+# flip
+flip_chain,
 
-    # election
-    AbstractElection,
-    Election,
-    ElectionTracker,
-    vote_count,
-    vote_share,
-    seats_won,
-    mean_median,
-    wasted_votes,
-    efficiency_gap,
+# scores
+DistrictAggregate,
+DistrictScore,
+PlanScore,
+CompositeScore,
+AbstractScore,
+ChainScoreData,
+score_initial_partition, score_partition_from_proposal, eval_score_on_district,
+get_scores_at_step, eval_score_on_partition, save_scores_to_csv,
+save_scores_to_json, get_score_values, num_cut_edges, coerce_aggregated_attributes!,
 
-    # plot
-    score_boxplot,
-    score_histogram
+# acceptance functions
+always_accept, satisfies_acceptance_fn,
+
+# election
+AbstractElection, Election, ElectionTracker, vote_count, vote_share, seats_won,
+mean_median, wasted_votes, efficiency_gap,
+
+# plot
+score_boxplot, score_histogram
 
 include("./graph.jl")
 include("./partition.jl")
-include("./balance_edges.jl")
 include("./geo.jl")
 include("./proposals.jl")
 include("./constraints.jl")
